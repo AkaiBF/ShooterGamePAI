@@ -2,6 +2,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.*;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import javax.swing.*;
 
@@ -57,23 +58,19 @@ public class GameScreen extends JPanel implements KeyListener, MouseListener, Mo
 													 (int)(midBottomPointX + CANNONSIZE * MyMath.cos(getCannon().getAngle())), 
 													 (int)(midBottomPointY - CANNONSIZE * MyMath.sin(getCannon().getAngle())));
 		graphicObject.setColor(Color.GREEN);
-		ArrayList<Integer> indexes = new ArrayList<Integer>();
-		for(Shot i: getShots()) {
-			if(midBottomPointY - i.getPosition().getPositionY() <= 0) 
-				indexes.add(getShots().indexOf(i));
-			
-				
+		
+		Iterator<Shot> iterator = getShots().iterator();
+		while(iterator.hasNext()) {
+			Shot i = iterator.next();
+			if(midBottomPointY - i.getPosition().getPositionY() <= 0) {
+				iterator.remove();
+			}
 			graphicObject.drawOval(i.getPosition().getPositionX() - CANNONRADIUS,
 														 midBottomPointY - i.getPosition().getPositionY() - CANNONRADIUS,
 														 2 * CANNONRADIUS,
 														 2 * CANNONRADIUS);
 		}
 		
-		for(Integer i: indexes) {
-			System.out.println(i);
-			System.out.println(getShots().remove(i));
-			System.out.println(getShots().size());
-		}
 	}
 	public Cannon getCannon() {
 		return cannon;

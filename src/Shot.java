@@ -25,6 +25,10 @@ public class Shot {
 			return true;
 		return false;
 	}
+	@Override
+	public int hashCode() {
+		return (int)(getAngle() + getTime());
+	}
 	public Point getInitialPoint() {
 		return initialPoint;
 	}
