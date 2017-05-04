@@ -23,4 +23,11 @@ public class Point {
 	public void setPositionY(int positionY) {
 		this.positionY = positionY;
 	}
+	
+	public boolean equals(Object object) {
+		Point point = (Point)object;
+		if(this.getPositionX() == point.getPositionX() && this.getPositionY() == point.getPositionY())
+			return true;
+		return false;
+	}
 }

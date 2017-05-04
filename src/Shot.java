@@ -16,6 +16,15 @@ public class Shot {
 		return new Point(positionX, positionY);
 	}
 	
+	@Override
+	public boolean equals(Object object) {
+		Shot shot = (Shot)object;
+		if(this.getInitialPoint().equals(shot.getInitialPoint()) 
+				&& this.getAngle() == shot.getAngle()
+				&& this.getTime() == shot.getTime())
+			return true;
+		return false;
+	}
 	public Point getInitialPoint() {
 		return initialPoint;
 	}

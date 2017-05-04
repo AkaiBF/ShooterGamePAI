@@ -68,12 +68,12 @@ public class GameScreen extends JPanel implements KeyListener, MouseListener, Mo
 														 2 * CANNONRADIUS,
 														 2 * CANNONRADIUS);
 		}
-		/**
+		
 		for(Integer i: indexes) {
 			System.out.println(i);
 			System.out.println(getShots().remove(i));
 			System.out.println(getShots().size());
-		}**/
+		}
 	}
 	public Cannon getCannon() {
 		return cannon;
