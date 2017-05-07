@@ -13,13 +13,13 @@ public class GameScreen extends JPanel implements KeyListener, MouseListener, Mo
 	protected final int CANNONRADIUS = 10;
 	protected final double TIMELAPSE = 1;
 	
-	private Cannon cannon;
+	private GraphicCannon cannon;
 	private ArrayList<GraphicShot> shots;
 	private ArrayList<Ball> balls;
 
 	public GameScreen() {
 		super();
-		cannon = new Cannon();
+		cannon = new GraphicCannon();
 		shots = new ArrayList<GraphicShot>();
 		balls = new ArrayList<Ball>();
 		for(int i = 0; i < 40; i++) 
@@ -51,13 +51,13 @@ public class GameScreen extends JPanel implements KeyListener, MouseListener, Mo
 		
 		int midBottomPointX = (int)getSize().getWidth() / 2;
 		int midBottomPointY = (int)getSize().getHeight();
+		getCannon().drawComponent(graphicObject, midBottomPointX, midBottomPointY);
 		graphicObject.setColor(Color.BLACK);
 		graphicObject.drawOval(midBottomPointX - CANNONRADIUS, midBottomPointY - CANNONRADIUS, 2 * CANNONRADIUS, 2 * CANNONRADIUS);
 		graphicObject.drawLine(midBottomPointX, 
 													 midBottomPointY, 
 													 (int)(midBottomPointX + CANNONSIZE * MyMath.cos(getCannon().getAngle())), 
 													 (int)(midBottomPointY - CANNONSIZE * MyMath.sin(getCannon().getAngle())));
-		graphicObject.setColor(Color.GREEN);
 		
 		Iterator<GraphicShot> iterator = getShots().iterator();
 		while(iterator.hasNext()) {
@@ -70,11 +70,11 @@ public class GameScreen extends JPanel implements KeyListener, MouseListener, Mo
 		}
 		
 	}
-	public Cannon getCannon() {
+	public GraphicCannon getCannon() {
 		return cannon;
 	}
 
-	public void setCannon(Cannon cannon) {
+	public void setCannon(GraphicCannon cannon) {
 		this.cannon = cannon;
 	}
 	@Override
