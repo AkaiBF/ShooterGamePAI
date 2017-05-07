@@ -1,6 +1,9 @@
+import java.applet.Applet;
+import java.applet.AudioClip;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.*;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -15,15 +18,22 @@ public class GameScreen extends JPanel implements KeyListener, MouseListener, Mo
 	
 	private GraphicCannon cannon;
 	private ArrayList<GraphicShot> shots;
-	private ArrayList<Ball> balls;
+	private ArrayList<GraphicBall> balls;
 
+	private AudioClip audio;
+	
 	public GameScreen() {
 		super();
+		try {
+			audio = Applet.newAudioClip(getClass().getResource("D:/Eclipse/workspace/Shooter/scifi002.wav"));
+		} catch (Exception exception) {
+			exception.printStackTrace();
+		}
 		cannon = new GraphicCannon();
 		shots = new ArrayList<GraphicShot>();
-		balls = new ArrayList<Ball>();
+		balls = new ArrayList<GraphicBall>();
 		for(int i = 0; i < 40; i++) 
-			balls.add(new Ball());
+			balls.add(new GraphicBall());
 		addKeyListener(this);
 		addMouseListener(this);
 		addMouseMotionListener(this);
@@ -43,21 +53,14 @@ public class GameScreen extends JPanel implements KeyListener, MouseListener, Mo
 		graphicObject.setColor(Color.WHITE);
 		graphicObject.fillRect(0, 0, (int)getSize().getWidth(), (int)getSize().getHeight());
 		int counter = 0;
-		for(Ball i: getBalls()) {
-			graphicObject.setColor(i.getColor());
-			graphicObject.fillOval(counter, 0, i.getRadius() * 2, i.getRadius() * 2);
+		for(GraphicBall i: getBalls()) {
+			i.drawComponent(graphicObject, counter);
 			counter += 40;
 		}
 		
 		int midBottomPointX = (int)getSize().getWidth() / 2;
 		int midBottomPointY = (int)getSize().getHeight();
 		getCannon().drawComponent(graphicObject, midBottomPointX, midBottomPointY);
-		graphicObject.setColor(Color.BLACK);
-		graphicObject.drawOval(midBottomPointX - CANNONRADIUS, midBottomPointY - CANNONRADIUS, 2 * CANNONRADIUS, 2 * CANNONRADIUS);
-		graphicObject.drawLine(midBottomPointX, 
-													 midBottomPointY, 
-													 (int)(midBottomPointX + CANNONSIZE * MyMath.cos(getCannon().getAngle())), 
-													 (int)(midBottomPointY - CANNONSIZE * MyMath.sin(getCannon().getAngle())));
 		
 		Iterator<GraphicShot> iterator = getShots().iterator();
 		while(iterator.hasNext()) {
@@ -66,10 +69,9 @@ public class GameScreen extends JPanel implements KeyListener, MouseListener, Mo
 				iterator.remove();
 			}
 			i.drawComponent(graphicObject, midBottomPointY);
-		
 		}
-		
 	}
+	
 	public GraphicCannon getCannon() {
 		return cannon;
 	}
@@ -103,6 +105,8 @@ public class GameScreen extends JPanel implements KeyListener, MouseListener, Mo
 		int circleX = (int)(getSize().getWidth() / 2) + (int)(MyMath.cos(angle) * CANNONSIZE);
 		int circleY = (int)(MyMath.sin(angle) * CANNONSIZE);
 		getShots().add(new GraphicShot(new Point(circleX, circleY), angle, Color.GREEN));
+		getCannon().setNextShot(getBalls().get((int)(Math.random() * getBalls().size())).getColor());
+		audio.play();
 		repaint();
 	}
 	
@@ -130,10 +134,10 @@ public class GameScreen extends JPanel implements KeyListener, MouseListener, Mo
 	public void setShots(ArrayList<GraphicShot> shots) {
 		this.shots = shots;
 	}
-	public ArrayList<Ball> getBalls() {
+	public ArrayList<GraphicBall> getBalls() {
 		return balls;
 	}
-	public void setBalls(ArrayList<Ball> balls) {
+	public void setBalls(ArrayList<GraphicBall> balls) {
 		this.balls = balls;
 	}
 	
