@@ -14,13 +14,13 @@ public class GameScreen extends JPanel implements KeyListener, MouseListener, Mo
 	protected final double TIMELAPSE = 1;
 	
 	private Cannon cannon;
-	private ArrayList<Shot> shots;
+	private ArrayList<GraphicShot> shots;
 	private ArrayList<Ball> balls;
 
 	public GameScreen() {
 		super();
 		cannon = new Cannon();
-		shots = new ArrayList<Shot>();
+		shots = new ArrayList<GraphicShot>();
 		balls = new ArrayList<Ball>();
 		for(int i = 0; i < 40; i++) 
 			balls.add(new Ball());
@@ -59,16 +59,14 @@ public class GameScreen extends JPanel implements KeyListener, MouseListener, Mo
 													 (int)(midBottomPointY - CANNONSIZE * MyMath.sin(getCannon().getAngle())));
 		graphicObject.setColor(Color.GREEN);
 		
-		Iterator<Shot> iterator = getShots().iterator();
+		Iterator<GraphicShot> iterator = getShots().iterator();
 		while(iterator.hasNext()) {
-			Shot i = iterator.next();
+			GraphicShot i = iterator.next();
 			if(midBottomPointY - i.getPosition().getPositionY() <= 0) {
 				iterator.remove();
 			}
-			graphicObject.drawOval(i.getPosition().getPositionX() - CANNONRADIUS,
-														 midBottomPointY - i.getPosition().getPositionY() - CANNONRADIUS,
-														 2 * CANNONRADIUS,
-														 2 * CANNONRADIUS);
+			i.drawComponent(graphicObject, midBottomPointY);
+		
 		}
 		
 	}
@@ -104,7 +102,7 @@ public class GameScreen extends JPanel implements KeyListener, MouseListener, Mo
 		double angle = MyMath.arccos(capturedX / hypotenuse);
 		int circleX = (int)(getSize().getWidth() / 2) + (int)(MyMath.cos(angle) * CANNONSIZE);
 		int circleY = (int)(MyMath.sin(angle) * CANNONSIZE);
-		getShots().add(new Shot(new Point(circleX, circleY), angle));
+		getShots().add(new GraphicShot(new Point(circleX, circleY), angle, Color.GREEN));
 		repaint();
 	}
 	
@@ -126,10 +124,10 @@ public class GameScreen extends JPanel implements KeyListener, MouseListener, Mo
 	
 	@Override
 	public void mouseDragged(MouseEvent arg0) {}
-	public ArrayList<Shot> getShots() {
+	public ArrayList<GraphicShot> getShots() {
 		return shots;
 	}
-	public void setShots(ArrayList<Shot> shots) {
+	public void setShots(ArrayList<GraphicShot> shots) {
 		this.shots = shots;
 	}
 	public ArrayList<Ball> getBalls() {

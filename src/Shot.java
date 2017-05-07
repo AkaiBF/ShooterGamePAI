@@ -50,6 +50,6 @@ public class Shot {
 	public void advance(double timeLapse) {
 		setTime(getTime() + timeLapse);
 	}
-	
+
 	
 }
