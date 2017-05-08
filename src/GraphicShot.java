@@ -22,10 +22,11 @@ public class GraphicShot extends Shot {
 	
 	public void drawComponent(Graphics graphicObject, int midBottomPointY) {
 		graphicObject.setColor(getColor());
-		graphicObject.drawOval(getPosition().getPositionX() - RADIUS,
+		graphicObject.fillOval(getPosition().getPositionX() - RADIUS,
 				 midBottomPointY - getPosition().getPositionY() - RADIUS,
 				 2 * RADIUS,
 				 2 * RADIUS);
 	}
+	
 
 }

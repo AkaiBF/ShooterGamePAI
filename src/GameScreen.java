@@ -1,9 +1,6 @@
-import java.applet.Applet;
-import java.applet.AudioClip;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.*;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -20,15 +17,9 @@ public class GameScreen extends JPanel implements KeyListener, MouseListener, Mo
 	private ArrayList<GraphicShot> shots;
 	private ArrayList<GraphicBall> balls;
 
-	private AudioClip audio;
 	
 	public GameScreen() {
 		super();
-		try {
-			audio = Applet.newAudioClip(getClass().getResource("D:/Eclipse/workspace/Shooter/scifi002.wav"));
-		} catch (Exception exception) {
-			exception.printStackTrace();
-		}
 		cannon = new GraphicCannon();
 		shots = new ArrayList<GraphicShot>();
 		balls = new ArrayList<GraphicBall>();
@@ -104,9 +95,8 @@ public class GameScreen extends JPanel implements KeyListener, MouseListener, Mo
 		double angle = MyMath.arccos(capturedX / hypotenuse);
 		int circleX = (int)(getSize().getWidth() / 2) + (int)(MyMath.cos(angle) * CANNONSIZE);
 		int circleY = (int)(MyMath.sin(angle) * CANNONSIZE);
-		getShots().add(new GraphicShot(new Point(circleX, circleY), angle, Color.GREEN));
+		getShots().add(new GraphicShot(new Point(circleX, circleY), angle, getCannon().getNextShot()));
 		getCannon().setNextShot(getBalls().get((int)(Math.random() * getBalls().size())).getColor());
-		audio.play();
 		repaint();
 	}
 	
