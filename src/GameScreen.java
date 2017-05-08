@@ -6,9 +6,24 @@ import java.util.Iterator;
 
 import javax.swing.*;
 
+/**
+ * Game screen for the Shooter Game Bubble-like
+ * 
+ * Country: Spain
+ * University: Universidad de La Laguna
+ * Subject: Programación de Aplicaciones Interactivas
+ * Repository: https://github.com/AkaiBF/ShooterGamePAI
+ * 
+ * @author Ernesto Echeverría González
+ * @email alu0100881622@ull.edu.es
+ * @since 05-08-2017
+ * @version 1.0.0
+ */
+
 public class GameScreen extends JPanel implements KeyListener, MouseListener, MouseMotionListener {
 	private static final long serialVersionUID = 1L;
 	
+	protected final int BALLRADIUS = 40;
 	protected final int CANNONSIZE = 30;
 	protected final int CANNONRADIUS = 10;
 	protected final double TIMELAPSE = 1;
@@ -18,13 +33,17 @@ public class GameScreen extends JPanel implements KeyListener, MouseListener, Mo
 	private ArrayList<GraphicBall> balls;
 
 	
-	public GameScreen() {
+	public GameScreen(int width) {
 		super();
 		cannon = new GraphicCannon();
 		shots = new ArrayList<GraphicShot>();
 		balls = new ArrayList<GraphicBall>();
-		for(int i = 0; i < 40; i++) 
-			balls.add(new GraphicBall());
+		for(int i = 0; i < width / (BALLRADIUS + 1); i++) {
+			GraphicBall ball = new GraphicBall();
+			ball.setPositionX(i * BALLRADIUS);
+			balls.add(ball);
+		}
+			
 		addKeyListener(this);
 		addMouseListener(this);
 		addMouseMotionListener(this);
@@ -32,8 +51,25 @@ public class GameScreen extends JPanel implements KeyListener, MouseListener, Mo
 		
 		ActionListener timerEvent = new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
-				for(Shot i: getShots()) 
+				ArrayList<GraphicBall> toRemove = new ArrayList<GraphicBall>();
+				ArrayList<GraphicShot> removeShot = new ArrayList<GraphicShot>();
+				Iterator<GraphicShot> shotIterator = getShots().iterator();
+				while(shotIterator.hasNext()) {
+					GraphicShot i = shotIterator.next();
 					i.advance(TIMELAPSE);
+					Iterator<GraphicBall> ballIterator = getBalls().iterator();
+					while(ballIterator.hasNext()) {
+						GraphicBall j = ballIterator.next();
+						if(i.impact(j, (int)getSize().getHeight())) {
+							toRemove.add(j);
+							removeShot.add(i);
+						}
+					}
+				}
+				if(toRemove.size() == 1)
+					getBalls().remove(toRemove.get(0));
+				for(GraphicShot i: removeShot)
+					getShots().remove(i);
 				repaint();
 			}
 		};
@@ -43,16 +79,11 @@ public class GameScreen extends JPanel implements KeyListener, MouseListener, Mo
 	public void paintComponent(Graphics graphicObject) {
 		graphicObject.setColor(Color.WHITE);
 		graphicObject.fillRect(0, 0, (int)getSize().getWidth(), (int)getSize().getHeight());
-		int counter = 0;
-		for(GraphicBall i: getBalls()) {
-			i.drawComponent(graphicObject, counter);
-			counter += 40;
-		}
-		
+		for(GraphicBall i: getBalls())
+			i.drawComponent(graphicObject);
 		int midBottomPointX = (int)getSize().getWidth() / 2;
 		int midBottomPointY = (int)getSize().getHeight();
 		getCannon().drawComponent(graphicObject, midBottomPointX, midBottomPointY);
-		
 		Iterator<GraphicShot> iterator = getShots().iterator();
 		while(iterator.hasNext()) {
 			GraphicShot i = iterator.next();
@@ -63,13 +94,6 @@ public class GameScreen extends JPanel implements KeyListener, MouseListener, Mo
 		}
 	}
 	
-	public GraphicCannon getCannon() {
-		return cannon;
-	}
-
-	public void setCannon(GraphicCannon cannon) {
-		this.cannon = cannon;
-	}
 	@Override
 	public void keyPressed(KeyEvent evento) {
 		if(evento.getKeyCode() == 37)
@@ -95,8 +119,11 @@ public class GameScreen extends JPanel implements KeyListener, MouseListener, Mo
 		double angle = MyMath.arccos(capturedX / hypotenuse);
 		int circleX = (int)(getSize().getWidth() / 2) + (int)(MyMath.cos(angle) * CANNONSIZE);
 		int circleY = (int)(MyMath.sin(angle) * CANNONSIZE);
-		getShots().add(new GraphicShot(new Point(circleX, circleY), angle, getCannon().getNextShot()));
+		getShots().add(new GraphicShot(new Point(circleX, circleY), angle, getCannon().getNextShot(), CANNONRADIUS));
+		if(getBalls().size() > 0)
 		getCannon().setNextShot(getBalls().get((int)(Math.random() * getBalls().size())).getColor());
+		else 
+			System.out.println("You won");
 		repaint();
 	}
 	
@@ -118,6 +145,8 @@ public class GameScreen extends JPanel implements KeyListener, MouseListener, Mo
 	
 	@Override
 	public void mouseDragged(MouseEvent arg0) {}
+	
+	// Getters & Setters
 	public ArrayList<GraphicShot> getShots() {
 		return shots;
 	}
@@ -130,5 +159,10 @@ public class GameScreen extends JPanel implements KeyListener, MouseListener, Mo
 	public void setBalls(ArrayList<GraphicBall> balls) {
 		this.balls = balls;
 	}
-	
+	public GraphicCannon getCannon() {
+		return cannon;
+	}
+	public void setCannon(GraphicCannon cannon) {
+		this.cannon = cannon;
+	}
 }
