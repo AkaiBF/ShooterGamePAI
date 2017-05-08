@@ -74,6 +74,10 @@ public class GameScreen extends JPanel implements KeyListener, MouseListener, Mo
 			}
 		};
 		new Timer((int)(TIMELAPSE * 10), timerEvent).start();
+		if(getBalls().size() > 0)
+			getCannon().setNextShot(getBalls().get((int)(Math.random() * getBalls().size())).getColor());
+			else 
+				System.out.println("You won");
 		
 	}
 	public void paintComponent(Graphics graphicObject) {
@@ -97,9 +101,19 @@ public class GameScreen extends JPanel implements KeyListener, MouseListener, Mo
 	@Override
 	public void keyPressed(KeyEvent evento) {
 		if(evento.getKeyCode() == 37)
-			getCannon().setAngle(getCannon().getAngle() + 0.5);
+			getCannon().setAngle(getCannon().getAngle() + 2);
 		if(evento.getKeyCode() == 39)
-			getCannon().setAngle(getCannon().getAngle() - 0.5);
+			getCannon().setAngle(getCannon().getAngle() - 2);
+		if(evento.getKeyCode() == KeyEvent.VK_SPACE) {
+			int circleX = (int)(getSize().getWidth() / 2) + (int)(MyMath.cos(getCannon().getAngle()) * CANNONSIZE);
+			int circleY = (int)(MyMath.sin(getCannon().getAngle()) * CANNONSIZE);
+			getShots().add(new GraphicShot(new Point(circleX, circleY), getCannon().getAngle(), getCannon().getNextShot(), CANNONRADIUS));
+			if(getBalls().size() > 0)
+			getCannon().setNextShot(getBalls().get((int)(Math.random() * getBalls().size())).getColor());
+			else 
+				System.out.println("You won");
+		}
+			
 		repaint();
 	}
 	@Override

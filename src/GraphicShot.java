@@ -40,7 +40,7 @@ public class GraphicShot extends Shot {
 				 2 * getRadius());
 	}
 	public boolean impact(GraphicBall ball, int jPanelHeight) {
-		int ballX = ball.getPositionX();
+		int ballX = ball.getPositionX() + ball.getRadius();
 		int ballY = ball.getRadius();
 		int shotX = this.getPosition().getPositionX();
 		int shotY = jPanelHeight - this.getPosition().getPositionY();
