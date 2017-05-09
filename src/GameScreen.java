@@ -28,13 +28,16 @@ public class GameScreen extends JPanel implements KeyListener, MouseListener, Mo
 	protected final int CANNONRADIUS = 10;
 	protected final double TIMELAPSE = 1;
 	
-	private GraphicCannon cannon;
-	private ArrayList<GraphicShot> shots;
-	private ArrayList<GraphicBall> balls;
+	private GraphicCannon cannon;										// Cannon
+	private ArrayList<GraphicShot> shots;						// Shots of the cannon
+	private ArrayList<GraphicBall> balls;						// Balls of the top
 
+	public boolean ended;														// Tests if the game is already finished
+	public boolean noloop = false;									// Prevents the JDialog from entering a infinite loop
 	
 	public GameScreen(int width) {
 		super();
+		ended = false;
 		cannon = new GraphicCannon();
 		shots = new ArrayList<GraphicShot>();
 		balls = new ArrayList<GraphicBall>();
@@ -43,7 +46,7 @@ public class GameScreen extends JPanel implements KeyListener, MouseListener, Mo
 			ball.setPositionX(i * BALLRADIUS);
 			balls.add(ball);
 		}
-			
+		// Adding listeners	
 		addKeyListener(this);
 		addMouseListener(this);
 		addMouseMotionListener(this);
@@ -51,6 +54,8 @@ public class GameScreen extends JPanel implements KeyListener, MouseListener, Mo
 		
 		ActionListener timerEvent = new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
+				if(getBalls().size() == 0) setEnded();
+				if(getEnded() && getBalls().size() == 0 && !getNoloop()) gameEnd();
 				ArrayList<GraphicBall> toRemove = new ArrayList<GraphicBall>();
 				ArrayList<GraphicShot> removeShot = new ArrayList<GraphicShot>();
 				Iterator<GraphicShot> shotIterator = getShots().iterator();
@@ -63,11 +68,14 @@ public class GameScreen extends JPanel implements KeyListener, MouseListener, Mo
 						if(i.impact(j, (int)getSize().getHeight())) {
 							toRemove.add(j);
 							removeShot.add(i);
-						}
+							Sounds.success();
+						} 
 					}
 				}
 				if(toRemove.size() == 1)
 					getBalls().remove(toRemove.get(0));
+				else if(toRemove.size() > 1)
+					Sounds.error();
 				for(GraphicShot i: removeShot)
 					getShots().remove(i);
 				repaint();
@@ -76,10 +84,10 @@ public class GameScreen extends JPanel implements KeyListener, MouseListener, Mo
 		new Timer((int)(TIMELAPSE * 10), timerEvent).start();
 		if(getBalls().size() > 0)
 			getCannon().setNextShot(getBalls().get((int)(Math.random() * getBalls().size())).getColor());
-			else 
-				System.out.println("You won");
-		
 	}
+	/**
+	 * Paint component method
+	 */
 	public void paintComponent(Graphics graphicObject) {
 		graphicObject.setColor(Color.WHITE);
 		graphicObject.fillRect(0, 0, (int)getSize().getWidth(), (int)getSize().getHeight());
@@ -97,10 +105,10 @@ public class GameScreen extends JPanel implements KeyListener, MouseListener, Mo
 			i.drawComponent(graphicObject, midBottomPointY);
 		}
 	}
-	
+	// Keyboard events controllers.
 	@Override
 	public void keyPressed(KeyEvent evento) {
-		if(evento.getKeyCode() == 37)
+		/*if(evento.getKeyCode() == 37)
 			getCannon().setAngle(getCannon().getAngle() + 2);
 		if(evento.getKeyCode() == 39)
 			getCannon().setAngle(getCannon().getAngle() - 2);
@@ -110,12 +118,12 @@ public class GameScreen extends JPanel implements KeyListener, MouseListener, Mo
 			getShots().add(new GraphicShot(new Point(circleX, circleY), getCannon().getAngle(), getCannon().getNextShot(), CANNONRADIUS));
 			if(getBalls().size() > 0)
 			getCannon().setNextShot(getBalls().get((int)(Math.random() * getBalls().size())).getColor());
-			else 
-				System.out.println("You won");
 		}
 			
 		repaint();
+		*/
 	}
+	
 	@Override
 	public void mouseMoved(MouseEvent evento) {
 		int capturedX = evento.getX() - (int)(getSize().getWidth() / 2);			
@@ -136,12 +144,21 @@ public class GameScreen extends JPanel implements KeyListener, MouseListener, Mo
 		getShots().add(new GraphicShot(new Point(circleX, circleY), angle, getCannon().getNextShot(), CANNONRADIUS));
 		if(getBalls().size() > 0)
 		getCannon().setNextShot(getBalls().get((int)(Math.random() * getBalls().size())).getColor());
-		else 
-			System.out.println("You won");
 		repaint();
 	}
 	
-	
+	/**
+	 * Displays a JDialog that tells the player he/she won.
+	 */
+	public void gameEnd() {
+		setNoloop();
+		JDialog dialog = new JDialog();
+		dialog.getRootPane().setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+		JLabel text = new JLabel("Congratulations! You won!");
+		dialog.add(text);
+		dialog.pack();
+		dialog.setVisible(true);
+	}
 	// Unused events
 	@Override
 	public void keyReleased(KeyEvent arg0) {}
@@ -178,5 +195,17 @@ public class GameScreen extends JPanel implements KeyListener, MouseListener, Mo
 	}
 	public void setCannon(GraphicCannon cannon) {
 		this.cannon = cannon;
+	}
+	public void setEnded() {
+		ended = true;
+	}
+	public boolean getEnded() {
+		return ended;
+	}
+	public void setNoloop() {
+		this.noloop = true;
+	}
+	public boolean getNoloop() {
+		return this.noloop;
 	}
 }
